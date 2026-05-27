@@ -100,7 +100,7 @@ async function getL1Block(): Promise<number> {
 
 async function getGasFees() {
   const fee = await pub.estimateFeesPerGas()
-  return { maxFeePerGas: fee.maxFeePerGas, maxPriorityFeePerGas: fee.maxPriorityFeePerGas }
+  return { maxFeePerGas: fee.maxFeePerGas! * 2n, maxPriorityFeePerGas: fee.maxPriorityFeePerGas! * 2n }
 }
 
 async function discoverForms(): Promise<`0x${string}`[]> {

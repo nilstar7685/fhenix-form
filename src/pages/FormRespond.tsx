@@ -80,9 +80,12 @@ export default function FormRespond() {
       const encrypted = await cofheClient.encryptInputs(flat.map(v => Encryptable.uint32(BigInt(v)))).execute()
       const encoded = encrypted.map(e => ({ ctHash: e.ctHash, securityZone: e.securityZone, utype: e.utype, signature: e.signature as `0x${string}` }))
       setStatus('submitting')
+      const fees = await publicClient.estimateFeesPerGas()
       const hash = await walletClient.writeContract({
         chain: arbitrumSepolia, account: address, address: FORMS_CONTRACT, abi: FORMS_ABI,
         functionName: 'submitResponse', args: [formId as `0x${string}`, encoded],
+        maxFeePerGas: fees.maxFeePerGas! * 2n,
+        maxPriorityFeePerGas: fees.maxPriorityFeePerGas! * 2n,
       })
       await publicClient.waitForTransactionReceipt({ hash })
       setStatus('done')
