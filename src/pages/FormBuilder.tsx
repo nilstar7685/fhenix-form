@@ -81,11 +81,14 @@ export default function FormBuilder() {
       const slotCounts = questions.map(q => SLOT_COUNT[q.type] ?? q.options.length)
       const labelHashes = questions.map(q => keccak256(stringToHex(q.text)))
 
+      const fees = await publicClient.estimateFeesPerGas()
       const hash = await walletClient.writeContract({
         chain: arbitrumSepolia, account: address,
         address: FORMS_CONTRACT, abi: FORMS_ABI,
         functionName: 'createForm',
         args: [formId, metadataHash, durationBlocks, questions.length, qTypes, slotCounts, labelHashes],
+        maxFeePerGas: fees.maxFeePerGas! * 2n,
+        maxPriorityFeePerGas: fees.maxPriorityFeePerGas! * 2n,
       })
       await publicClient.waitForTransactionReceipt({ hash })
       setCreatedFormId(formId)
